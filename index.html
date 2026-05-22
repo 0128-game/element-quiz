@@ -238,41 +238,45 @@ function initTable() {
         }
     }
 
-    function startGame() {
-        const count = document.getElementById('playerCount').value;
-        gameState.players = [];
-        gameState.maxLife = parseInt(document.getElementById('lifeSetting').value);
-        
-        for(let i=1; i<=count; i++) {
-            gameState.players.push({
-                name: document.getElementById(`pName${i}`).value,
-                score: 0,
-                life: gameState.maxLife
-            });
-        }
-
-        gameState.doubleZones.clear();
-        if(document.getElementById('doubleRule').checked) {
-            // ランダムに10個を2倍ゾーンに
-            while(gameState.doubleZones.size < 10) {
-                gameState.doubleZones.add(ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)]);
-            }
-        }
-
-        gameState.answered.clear();
-        gameState.currentPlayerIndex = 0;
-        gameState.isGameOver = false;
-        
-        initTable();
-        // 2倍ゾーンの描画
-        gameState.doubleZones.forEach(sym => {
-            const cells = document.querySelectorAll(`[data-symbol="${sym}"]`);
-            cells.forEach(c => c.classList.add('double-zone'));
+function startGame() {
+    const count = document.getElementById('playerCount').value;
+    gameState.players = [];
+    gameState.maxLife = parseInt(document.getElementById('lifeSetting').value);
+    
+    for(let i=1; i<=count; i++) {
+        gameState.players.push({
+            name: document.getElementById(`pName${i}`).value,
+            score: 0,
+            life: gameState.maxLife
         });
-
-        document.getElementById('settingsModal').style.display = 'none';
-        updateUI();
     }
+
+    gameState.doubleZones.clear();
+    // 2倍ルールの判定部分を修正
+    if(document.getElementById('doubleRule').checked) {
+        // ELEMENT_DATAからランダムに10個の記号を選ぶ
+        while(gameState.doubleZones.size < 10) {
+            const randomIndex = Math.floor(Math.random() * ELEMENT_DATA.length);
+            const randomSymbol = ELEMENT_DATA[randomIndex].s; // .s で記号を取得
+            gameState.doubleZones.add(randomSymbol);
+        }
+    }
+
+    gameState.answered.clear();
+    gameState.currentPlayerIndex = 0;
+    gameState.isGameOver = false;
+    
+    initTable();
+    
+    // 2倍ゾーンの描画
+    gameState.doubleZones.forEach(sym => {
+        const cells = document.querySelectorAll(`[data-symbol="${sym}"]`);
+        cells.forEach(c => c.classList.add('double-zone'));
+    });
+
+    document.getElementById('settingsModal').style.display = 'none';
+    updateUI();
+}
 
     function updateUI() {
         if(gameState.isGameOver) return;
