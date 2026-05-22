@@ -61,14 +61,24 @@
             border: 1px solid #fff;
         }
 
-        .element-cell.double-zone {
-            border: 2px solid red;
-            background: #ffebee;
-        }
+/* 2倍ルールの枠を緑に変更 */
+.element-cell.double-zone {
+    border: 2px solid #2ecc71; /* 緑色 */
+    background: #eafaf1;
+}
 
-        .element-cell.filled.double-zone {
-            background: var(--accent-color);
-        }
+.element-cell.filled.double-zone {
+    background: #2ecc71; /* 正解時も緑 */
+    color: white;
+}
+
+/* ゲーム終了時：未入力の場所を赤くするクラス */
+.element-cell.not-filled-end {
+    background: #ffcccc !important;
+    border: 1px solid #e74c3c !important;
+    color: #e74c3c !important;
+    opacity: 0.7;
+}
 
         /* --- プレイヤー情報 & 操作 --- */
         .game-info {
@@ -356,15 +366,29 @@ function handleSubmit() {
         endGame(`${currentP.name} が降参しました。`);
     }
 
-    function endGame(reason) {
-        gameState.isGameOver = true;
-        document.getElementById('currentPlayerDisplay').innerText = "🏁 GAME OVER";
-        document.getElementById('message').innerText = reason;
-        
-        // 勝者判定（スコアが一番高い人）
-        const winner = [...gameState.players].sort((a,b) => b.score - a.score)[0];
+function endGame(reason) {
+    gameState.isGameOver = true;
+    document.getElementById('currentPlayerDisplay').innerText = "🏁 GAME OVER";
+    document.getElementById('message').innerText = reason;
+
+    // --- 追加：未入力の元素を赤く表示 ---
+    const allCells = document.querySelectorAll('.element-cell');
+    allCells.forEach(cell => {
+        // 元素が存在するマスで、かつ正解（filled）していない場合
+        if (cell.dataset.symbol && !cell.classList.contains('filled')) {
+            cell.classList.add('not-filled-end');
+            // せっかくなので記号も見えるようにする
+            cell.style.color = '#e74c3c';
+        }
+    });
+    // ---------------------------------
+
+    // 勝者判定
+    const winner = [...gameState.players].sort((a,b) => b.score - a.score)[0];
+    setTimeout(() => {
         alert(`${reason}\n優勝は ${winner.name} (${winner.score}pt) です！`);
-    }
+    }, 500); // 少し間を置いてからアラートを出す
+}
 
     // Enterキーで送信
     document.getElementById('symbolInput').addEventListener('keypress', (e) => {
