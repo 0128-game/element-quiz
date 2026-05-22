@@ -42,18 +42,30 @@
             margin-bottom: 20px;
         }
 
-        .element-cell {
-            width: 40px;
-            height: 50px;
-            background: #eee;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 10px;
-            font-weight: bold;
-            color: transparent;
-        }
+.element-cell {
+    width: 45px;
+    height: 55px; /* 高さを少し拡張 */
+    background: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: transparent; /* 通常時は見えない */
+    line-height: 1.1;
+    border-radius: 3px;
+}
+
+/* 記号のスタイル */
+.symbol {
+    font-size: 14px;
+}
+
+/* 名前のスタイル */
+.name {
+    font-size: 8px; /* 日本語は小さめに */
+    font-weight: normal;
+}
 
         .element-cell.filled {
             background: var(--primary-color);
@@ -189,13 +201,13 @@
     
 // 原子番号1〜118までの全データ
 const ELEMENT_DATA = [
-    { s: "H", r: 1, c: 1 }, { s: "He", r: 1, c: 18 },
-    { s: "Li", r: 2, c: 1 }, { s: "Be", r: 2, c: 2 }, { s: "B", r: 2, c: 13 }, { s: "C", r: 2, c: 14 }, { s: "N", r: 2, c: 15 }, { s: "O", r: 2, c: 16 }, { s: "F", r: 2, c: 17 }, { s: "Ne", r: 2, c: 18 },
-    { s: "Na", r: 3, c: 1 }, { s: "Mg", r: 3, c: 2 }, { s: "Al", r: 3, c: 13 }, { s: "Si", r: 3, c: 14 }, { s: "P", r: 3, c: 15 }, { s: "S", r: 3, c: 16 }, { s: "Cl", r: 3, c: 17 }, { s: "Ar", r: 3, c: 18 },
-    { s: "K", r: 4, c: 1 }, { s: "Ca", r: 4, c: 2 }, { s: "Sc", r: 4, c: 3 }, { s: "Ti", r: 4, c: 4 }, { s: "V", r: 4, c: 5 }, { s: "Cr", r: 4, c: 6 }, { s: "Mn", r: 4, c: 7 }, { s: "Fe", r: 4, c: 8 }, { s: "Co", r: 4, c: 9 }, { s: "Ni", r: 4, c: 10 }, { s: "Cu", r: 4, c: 11 }, { s: "Zn", r: 4, c: 12 }, { s: "Ga", r: 4, c: 13 }, { s: "Ge", r: 4, c: 14 }, { s: "As", r: 4, c: 15 }, { s: "Se", r: 4, c: 16 }, { s: "Br", r: 4, c: 17 }, { s: "Kr", r: 4, c: 18 },
-    { s: "Rb", r: 5, c: 1 }, { s: "Sr", r: 5, c: 2 }, { s: "Y", r: 5, c: 3 }, { s: "Zr", r: 5, c: 4 }, { s: "Nb", r: 5, c: 5 }, { s: "Mo", r: 5, c: 6 }, { s: "Tc", r: 5, c: 7 }, { s: "Ru", r: 5, c: 8 }, { s: "Rh", r: 5, c: 9 }, { s: "Pd", r: 5, c: 10 }, { s: "Ag", r: 5, c: 11 }, { s: "Cd", r: 5, c: 12 }, { s: "In", r: 5, c: 13 }, { s: "Sn", r: 5, c: 14 }, { s: "Sb", r: 5, c: 15 }, { s: "Te", r: 5, c: 16 }, { s: "I", r: 5, c: 17 }, { s: "Xe", r: 5, c: 18 },
-    { s: "Cs", r: 6, c: 1 }, { s: "Ba", r: 6, c: 2 }, { s: "La", r: 6, c: 3 }, { s: "Ce", r: 9, c: 4 }, { s: "Pr", r: 9, c: 5 }, { s: "Nd", r: 9, c: 6 }, { s: "Pm", r: 9, c: 7 }, { s: "Sm", r: 9, c: 8 }, { s: "Eu", r: 9, c: 9 }, { s: "Gd", r: 9, c: 10 }, { s: "Tb", r: 9, c: 11 }, { s: "Dy", r: 9, c: 12 }, { s: "Ho", r: 9, c: 13 }, { s: "Er", r: 9, c: 14 }, { s: "Tm", r: 9, c: 15 }, { s: "Yb", r: 9, c: 16 }, { s: "Lu", r: 9, c: 17 }, { s: "Hf", r: 6, c: 4 }, { s: "Ta", r: 6, c: 5 }, { s: "W", r: 6, c: 6 }, { s: "Re", r: 6, c: 7 }, { s: "Os", r: 6, c: 8 }, { s: "Ir", r: 6, c: 9 }, { s: "Pt", r: 6, c: 10 }, { s: "Au", r: 6, c: 11 }, { s: "Hg", r: 6, c: 12 }, { s: "Tl", r: 6, c: 13 }, { s: "Pb", r: 6, c: 14 }, { s: "Bi", r: 6, c: 15 }, { s: "Po", r: 6, c: 16 }, { s: "At", r: 6, c: 17 }, { s: "Rn", r: 6, c: 18 },
-    { s: "Fr", r: 7, c: 1 }, { s: "Ra", r: 7, c: 2 }, { s: "Ac", r: 7, c: 3 }, { s: "Th", r: 10, c: 4 }, { s: "Pa", r: 10, c: 5 }, { s: "U", r: 10, c: 6 }, { s: "Np", r: 10, c: 7 }, { s: "Pu", r: 10, c: 8 }, { s: "Am", r: 10, c: 9 }, { s: "Cm", r: 10, c: 10 }, { s: "Bk", r: 10, c: 11 }, { s: "Cf", r: 10, c: 12 }, { s: "Es", r: 10, c: 13 }, { s: "Fm", r: 10, c: 14 }, { s: "Md", r: 10, c: 15 }, { s: "No", r: 10, c: 16 }, { s: "Lr", r: 10, c: 17 }, { s: "Rf", r: 7, c: 4 }, { s: "Db", r: 7, c: 5 }, { s: "Sg", r: 7, c: 6 }, { s: "Bh", r: 7, c: 7 }, { s: "Hs", r: 7, c: 8 }, { s: "Mt", r: 7, c: 9 }, { s: "Ds", r: 7, c: 10 }, { s: "Rg", r: 7, c: 11 }, { s: "Cn", r: 7, c: 12 }, { s: "Nh", r: 7, c: 13 }, { s: "Fl", r: 7, c: 14 }, { s: "Mc", r: 7, c: 15 }, { s: "Lv", r: 7, c: 16 }, { s: "Ts", r: 7, c: 17 }, { s: "Og", r: 7, c: 18 }
+    { s: "H", n: "水素", r: 1, c: 1 }, { s: "He", n: "ヘリウム", r: 1, c: 18 },
+    { s: "Li", n: "リチウム", r: 2, c: 1 }, { s: "Be", n: "ベリリウム", r: 2, c: 2 }, { s: "B", n: "ホウ素", r: 2, c: 13 }, { s: "C", n: "炭素", r: 2, c: 14 }, { s: "N", n: "窒素", r: 2, c: 15 }, { s: "O", n: "酸素", r: 2, c: 16 }, { s: "F", n: "フッ素", r: 2, c: 17 }, { s: "Ne", n: "ネオン", r: 2, c: 18 },
+    { s: "Na", n: "ナトリウム", r: 3, c: 1 }, { s: "Mg", n: "マグネシウム", r: 3, c: 2 }, { s: "Al", n: "アルミニウム", r: 3, c: 13 }, { s: "Si", n: "ケイ素", r: 3, c: 14 }, { s: "P", n: "リン", r: 3, c: 15 }, { s: "S", n: "硫黄", r: 3, c: 16 }, { s: "Cl", n: "塩素", r: 3, c: 17 }, { s: "Ar", n: "アルゴン", r: 3, c: 18 },
+    { s: "K", n: "カリウム", r: 4, c: 1 }, { s: "Ca", n: "カルシウム", r: 4, c: 2 }, { s: "Sc", n: "スカンジウム", r: 4, c: 3 }, { s: "Ti", n: "チタン", r: 4, c: 4 }, { s: "V", n: "バナジウム", r: 4, c: 5 }, { s: "Cr", n: "クロム", r: 4, c: 6 }, { s: "Mn", n: "マンガン", r: 4, c: 7 }, { s: "Fe", n: "鉄", r: 4, c: 8 }, { s: "Co", n: "コバルト", r: 4, c: 9 }, { s: "Ni", n: "ニッケル", r: 4, c: 10 }, { s: "Cu", n: "銅", r: 4, c: 11 }, { s: "Zn", n: "亜鉛", r: 4, c: 12 }, { s: "Ga", n: "ガリウム", r: 4, c: 13 }, { s: "Ge", n: "ゲルマニウム", r: 4, c: 14 }, { s: "As", n: "ヒ素", r: 4, c: 15 }, { s: "Se", n: "セレン", r: 4, c: 16 }, { s: "Br", n: "臭素", r: 4, c: 17 }, { s: "Kr", n: "クリプトン", r: 4, c: 18 },
+    { s: "Rb", n: "ルビジウム", r: 5, c: 1 }, { s: "Sr", n: "ストロンチウム", r: 5, c: 2 }, { s: "Y", n: "イットリウム", r: 5, c: 3 }, { s: "Zr", n: "ジルコニウム", r: 5, c: 4 }, { s: "Nb", n: "ニオブ", r: 5, c: 5 }, { s: "Mo", n: "モリブデン", r: 5, c: 6 }, { s: "Tc", n: "テクネチウム", r: 5, c: 7 }, { s: "Ru", n: "ルテニウム", r: 5, c: 8 }, { s: "Rh", n: "ロジウム", r: 5, c: 9 }, { s: "Pd", n: "パラジウム", r: 5, c: 10 }, { s: "Ag", n: "銀", r: 5, c: 11 }, { s: "Cd", n: "カドミウム", r: 5, c: 12 }, { s: "In", n: "インジウム", r: 5, c: 13 }, { s: "Sn", n: "スズ", r: 5, c: 14 }, { s: "Sb", n: "アンチモン", r: 5, c: 15 }, { s: "Te", n: "テルル", r: 5, c: 16 }, { s: "I", n: "ヨウ素", r: 5, c: 17 }, { s: "Xe", n: "キセノン", r: 5, c: 18 },
+    { s: "Cs", n: "セシウム", r: 6, c: 1 }, { s: "Ba", n: "バリウム", r: 6, c: 2 }, { s: "La", n: "ランタン", r: 6, c: 3 }, { s: "Ce", n: "セリウム", r: 9, c: 4 }, { s: "Pr", n: "プラセオジム", r: 9, c: 5 }, { s: "Nd", n: "ネオジム", r: 9, c: 6 }, { s: "Pm", n: "プロメチウム", r: 9, c: 7 }, { s: "Sm", n: "サマリウム", r: 9, c: 8 }, { s: "Eu", n: "ユウロピウム", r: 9, c: 9 }, { s: "Gd", n: "ガドリニウム", r: 9, c: 10 }, { s: "Tb", n: "テルビウム", r: 9, c: 11 }, { s: "Dy", n: "ジスプロシウム", r: 9, c: 12 }, { s: "Ho", n: "ホルミウム", r: 9, c: 13 }, { s: "Er", n: "エルビウム", r: 9, c: 14 }, { s: "Tm", n: "ツリウム", r: 9, c: 15 }, { s: "Yb", n: "イッテルビウム", r: 9, c: 16 }, { s: "Lu", n: "ルテチウム", r: 9, c: 17 }, { s: "Hf", n: "ハフニウム", r: 6, c: 4 }, { s: "Ta", n: "タンタル", r: 6, c: 5 }, { s: "W", n: "タングステン", r: 6, c: 6 }, { s: "Re", n: "レニウム", r: 6, c: 7 }, { s: "Os", n: "オスミウム", r: 6, c: 8 }, { s: "Ir", n: "イリジウム", r: 6, c: 9 }, { s: "Pt", n: "白金", r: 6, c: 10 }, { s: "Au", n: "金", r: 6, c: 11 }, { s: "Hg", n: "水銀", r: 6, c: 12 }, { s: "Tl", n: "タリウム", r: 6, c: 13 }, { s: "Pb", n: "鉛", r: 6, c: 14 }, { s: "Bi", n: "ビスマス", r: 6, c: 15 }, { s: "Po", n: "ポロニウム", r: 6, c: 16 }, { s: "At", n: "アスタチン", r: 6, c: 17 }, { s: "Rn", n: "ラドン", r: 6, c: 18 },
+    { s: "Fr", n: "フランシウム", r: 7, c: 1 }, { s: "Ra", n: "ラジウム", r: 7, c: 2 }, { s: "Ac", n: "アクチニウム", r: 7, c: 3 }, { s: "Th", n: "トリウム", r: 10, c: 4 }, { s: "Pa", n: "プロトアクチニウム", r: 10, c: 5 }, { s: "U", n: "ウラン", r: 10, c: 6 }, { s: "Np", n: "ネプツニウム", r: 10, c: 7 }, { s: "Pu", n: "プルトニウム", r: 10, c: 8 }, { s: "Am", n: "アメリシウム", r: 10, c: 9 }, { s: "Cm", n: "キュリウム", r: 10, c: 10 }, { s: "Bk", n: "バークリウム", r: 10, c: 11 }, { s: "Cf", n: "カリホルニウム", r: 10, c: 12 }, { s: "Es", n: "アインスタイニウム", r: 10, c: 13 }, { s: "Fm", n: "フェルミウム", r: 10, c: 14 }, { s: "Md", n: "メンデレビウム", r: 10, c: 15 }, { s: "No", n: "ノーベリウム", r: 10, c: 16 }, { s: "Lr", n: "ローレンシウム", r: 10, c: 17 }, { s: "Rf", n: "ラザホージウム", r: 7, c: 4 }, { s: "Db", n: "ドブニウム", r: 7, c: 5 }, { s: "Sg", n: "シーボーギウム", r: 7, c: 6 }, { s: "Bh", n: "ボーリウム", r: 7, c: 7 }, { s: "Hs", n: "ハッシウム", r: 7, c: 8 }, { s: "Mt", n: "マイトネリウム", r: 7, c: 9 }, { s: "Ds", n: "ダームスタチウム", r: 7, c: 10 }, { s: "Rg", n: "レントゲニウム", r: 7, c: 11 }, { s: "Cn", n: "コペルニシウム", r: 7, c: 12 }, { s: "Nh", n: "ニホニウム", r: 7, c: 13 }, { s: "Fl", n: "フレロビウム", r: 7, c: 14 }, { s: "Mc", n: "モスコビウム", r: 7, c: 15 }, { s: "Lv", n: "リバモリウム", r: 7, c: 16 }, { s: "Ts", n: "テネシン", r: 7, c: 17 }, { s: "Og", n: "オガネソン", r: 7, c: 18 }
 ];
 
     let gameState = {
@@ -211,23 +223,21 @@ function initTable() {
     const tableDiv = document.getElementById('table');
     tableDiv.innerHTML = '';
     
-    // 10行(ランタノイド用含む) × 18列 のマス目を作成
     for (let r = 1; r <= 10; r++) {
         for (let c = 1; c <= 18; c++) {
             const cell = document.createElement('div');
             cell.className = 'element-cell';
             cell.id = `cell-${r}-${c}`;
             
-            // 該当する座標に元素があるか探す
             const element = ELEMENT_DATA.find(e => e.r === r && e.c === c);
             
             if (element) {
-                cell.innerText = element.s;
+                // 記号と名前を両方入れる
+                cell.innerHTML = `<div class="symbol">${element.s}</div><div class="name">${element.n}</div>`;
                 cell.dataset.symbol = element.s;
             } else {
-                // 元素がないマスは透明（または8行目ならスペーサー）
                 cell.style.visibility = 'hidden';
-                if (r === 8) cell.style.height = '20px'; // 隙間を作る
+                if (r === 8) cell.style.height = '20px';
             }
             tableDiv.appendChild(cell);
         }
