@@ -176,35 +176,16 @@
 </div>
 
 <script>
-// 1. 全元素記号 (原子番号1〜118)
-const ELEMENTS = [
-    "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
-    "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca",
-    "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
-    "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr",
-    "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn",
-    "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
-    "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
-    "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg",
-    "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th",
-    "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm",
-    "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
-    "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"
-];
-
-// 2. 周期表上の座標データ [行, 列] (1から開始)
-// 行:1〜10 (8,9行目はランタノイド・アクチノイド用)、列:1〜18
-const TABLE_POS = [
-    [1, 1], [1, 18], // H, He
-    [2, 1], [2, 2], [2, 13], [2, 14], [2, 15], [2, 16], [2, 17], [2, 18], // Li-Ne
-    [3, 1], [3, 2], [3, 13], [3, 14], [3, 15], [3, 16], [3, 17], [3, 18], // Na-Ar
-    [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [4, 10], [4, 11], [4, 12], [4, 13], [4, 14], [4, 15], [4, 16], [4, 17], [4, 18], // K-Kr
-    [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8], [5, 9], [5, 10], [5, 11], [5, 12], [5, 13], [5, 14], [5, 15], [5, 16], [5, 17], [5, 18], // Rb-Xe
-    [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [6, 14], [6, 15], [6, 16], [6, 17], [6, 18], // Cs-Rn (La含む)
-    [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [7, 12], [7, 13], [7, 14], [7, 15], [7, 16], [7, 17], [7, 18], // Fr-Og (Ac含む)
-    // 以下のランタノイド(Ce-Lu)とアクチノイド(Th-Lr)は下の2行に配置
-    [9, 4], [9, 5], [9, 6], [9, 7], [9, 8], [9, 9], [9, 10], [9, 11], [9, 12], [9, 13], [9, 14], [9, 15], [9, 16], [9, 17], [9, 18], // Ce-Lu
-    [10, 4], [10, 5], [10, 6], [10, 7], [10, 8], [10, 9], [10, 10], [10, 11], [10, 12], [10, 13], [10, 14], [10, 15], [10, 16], [10, 17], [10, 18] // Th-Lr
+    
+// 原子番号1〜118までの全データ
+const ELEMENT_DATA = [
+    { s: "H", r: 1, c: 1 }, { s: "He", r: 1, c: 18 },
+    { s: "Li", r: 2, c: 1 }, { s: "Be", r: 2, c: 2 }, { s: "B", r: 2, c: 13 }, { s: "C", r: 2, c: 14 }, { s: "N", r: 2, c: 15 }, { s: "O", r: 2, c: 16 }, { s: "F", r: 2, c: 17 }, { s: "Ne", r: 2, c: 18 },
+    { s: "Na", r: 3, c: 1 }, { s: "Mg", r: 3, c: 2 }, { s: "Al", r: 3, c: 13 }, { s: "Si", r: 3, c: 14 }, { s: "P", r: 3, c: 15 }, { s: "S", r: 3, c: 16 }, { s: "Cl", r: 3, c: 17 }, { s: "Ar", r: 3, c: 18 },
+    { s: "K", r: 4, c: 1 }, { s: "Ca", r: 4, c: 2 }, { s: "Sc", r: 4, c: 3 }, { s: "Ti", r: 4, c: 4 }, { s: "V", r: 4, c: 5 }, { s: "Cr", r: 4, c: 6 }, { s: "Mn", r: 4, c: 7 }, { s: "Fe", r: 4, c: 8 }, { s: "Co", r: 4, c: 9 }, { s: "Ni", r: 4, c: 10 }, { s: "Cu", r: 4, c: 11 }, { s: "Zn", r: 4, c: 12 }, { s: "Ga", r: 4, c: 13 }, { s: "Ge", r: 4, c: 14 }, { s: "As", r: 4, c: 15 }, { s: "Se", r: 4, c: 16 }, { s: "Br", r: 4, c: 17 }, { s: "Kr", r: 4, c: 18 },
+    { s: "Rb", r: 5, c: 1 }, { s: "Sr", r: 5, c: 2 }, { s: "Y", r: 5, c: 3 }, { s: "Zr", r: 5, c: 4 }, { s: "Nb", r: 5, c: 5 }, { s: "Mo", r: 5, c: 6 }, { s: "Tc", r: 5, c: 7 }, { s: "Ru", r: 5, c: 8 }, { s: "Rh", r: 5, c: 9 }, { s: "Pd", r: 5, c: 10 }, { s: "Ag", r: 5, c: 11 }, { s: "Cd", r: 5, c: 12 }, { s: "In", r: 5, c: 13 }, { s: "Sn", r: 5, c: 14 }, { s: "Sb", r: 5, c: 15 }, { s: "Te", r: 5, c: 16 }, { s: "I", r: 5, c: 17 }, { s: "Xe", r: 5, c: 18 },
+    { s: "Cs", r: 6, c: 1 }, { s: "Ba", r: 6, c: 2 }, { s: "La", r: 6, c: 3 }, { s: "Ce", r: 9, c: 4 }, { s: "Pr", r: 9, c: 5 }, { s: "Nd", r: 9, c: 6 }, { s: "Pm", r: 9, c: 7 }, { s: "Sm", r: 9, c: 8 }, { s: "Eu", r: 9, c: 9 }, { s: "Gd", r: 9, c: 10 }, { s: "Tb", r: 9, c: 11 }, { s: "Dy", r: 9, c: 12 }, { s: "Ho", r: 9, c: 13 }, { s: "Er", r: 9, c: 14 }, { s: "Tm", r: 9, c: 15 }, { s: "Yb", r: 9, c: 16 }, { s: "Lu", r: 9, c: 17 }, { s: "Hf", r: 6, c: 4 }, { s: "Ta", r: 6, c: 5 }, { s: "W", r: 6, c: 6 }, { s: "Re", r: 6, c: 7 }, { s: "Os", r: 6, c: 8 }, { s: "Ir", r: 6, c: 9 }, { s: "Pt", r: 6, c: 10 }, { s: "Au", r: 6, c: 11 }, { s: "Hg", r: 6, c: 12 }, { s: "Tl", r: 6, c: 13 }, { s: "Pb", r: 6, c: 14 }, { s: "Bi", r: 6, c: 15 }, { s: "Po", r: 6, c: 16 }, { s: "At", r: 6, c: 17 }, { s: "Rn", r: 6, c: 18 },
+    { s: "Fr", r: 7, c: 1 }, { s: "Ra", r: 7, c: 2 }, { s: "Ac", r: 7, c: 3 }, { s: "Th", r: 10, c: 4 }, { s: "Pa", r: 10, c: 5 }, { s: "U", r: 10, c: 6 }, { s: "Np", r: 10, c: 7 }, { s: "Pu", r: 10, c: 8 }, { s: "Am", r: 10, c: 9 }, { s: "Cm", r: 10, c: 10 }, { s: "Bk", r: 10, c: 11 }, { s: "Cf", r: 10, c: 12 }, { s: "Es", r: 10, c: 13 }, { s: "Fm", r: 10, c: 14 }, { s: "Md", r: 10, c: 15 }, { s: "No", r: 10, c: 16 }, { s: "Lr", r: 10, c: 17 }, { s: "Rf", r: 7, c: 4 }, { s: "Db", r: 7, c: 5 }, { s: "Sg", r: 7, c: 6 }, { s: "Bh", r: 7, c: 7 }, { s: "Hs", r: 7, c: 8 }, { s: "Mt", r: 7, c: 9 }, { s: "Ds", r: 7, c: 10 }, { s: "Rg", r: 7, c: 11 }, { s: "Cn", r: 7, c: 12 }, { s: "Nh", r: 7, c: 13 }, { s: "Fl", r: 7, c: 14 }, { s: "Mc", r: 7, c: 15 }, { s: "Lv", r: 7, c: 16 }, { s: "Ts", r: 7, c: 17 }, { s: "Og", r: 7, c: 18 }
 ];
 
     let gameState = {
@@ -216,27 +197,32 @@ const TABLE_POS = [
         maxLife: 0
     };
 
-    // 初期化：周期表の枠作成
-    function initTable() {
-        const tableDiv = document.getElementById('table');
-        tableDiv.innerHTML = '';
-        for (let r = 1; r <= 7; r++) {
-            for (let c = 1; c <= 18; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'element-cell';
-                cell.id = `cell-${r}-${c}`;
-                // 元素の配置
-                const index = TABLE_POS.findIndex(p => p[0] === r && p[1] === c);
-                if (index !== -1) {
-                    cell.innerText = ELEMENTS[index];
-                    cell.dataset.symbol = ELEMENTS[index];
-                } else {
-                    cell.style.visibility = 'hidden';
-                }
-                tableDiv.appendChild(cell);
+function initTable() {
+    const tableDiv = document.getElementById('table');
+    tableDiv.innerHTML = '';
+    
+    // 10行(ランタノイド用含む) × 18列 のマス目を作成
+    for (let r = 1; r <= 10; r++) {
+        for (let c = 1; c <= 18; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'element-cell';
+            cell.id = `cell-${r}-${c}`;
+            
+            // 該当する座標に元素があるか探す
+            const element = ELEMENT_DATA.find(e => e.r === r && e.c === c);
+            
+            if (element) {
+                cell.innerText = element.s;
+                cell.dataset.symbol = element.s;
+            } else {
+                // 元素がないマスは透明（または8行目ならスペーサー）
+                cell.style.visibility = 'hidden';
+                if (r === 8) cell.style.height = '20px'; // 隙間を作る
             }
+            tableDiv.appendChild(cell);
         }
     }
+}
 
     function openModal() {
         document.getElementById('settingsModal').style.display = 'flex';
@@ -302,54 +288,64 @@ const TABLE_POS = [
         document.getElementById('playerStats').innerHTML = statsHtml;
     }
 
-    function handleSubmit() {
-        if(gameState.isGameOver) return;
+function handleSubmit() {
+    if(gameState.isGameOver) return;
 
-        const input = document.getElementById('symbolInput');
-        const symbol = input.value.trim();
-        const msg = document.getElementById('message');
-        const currentP = gameState.players[gameState.currentPlayerIndex];
+    const input = document.getElementById('symbolInput');
+    const symbol = input.value.trim(); // 入力された値
+    const msg = document.getElementById('message');
+    const currentP = gameState.players[gameState.currentPlayerIndex];
 
-        // 判定
-        if (!ELEMENTS.includes(symbol)) {
-            // 不正解
-            msg.innerText = "❌ 実在しない元素記号です (-1pt)";
-            currentP.score--;
-            if(gameState.maxLife > 0) currentP.life--;
-        } else if (gameState.answered.has(symbol)) {
-            // すでに回答済み
-            msg.innerText = "⚠️ すでに回答されています。もう一度！";
-            input.value = "";
-            return; // ターンは継続
-        } else {
-            // 正解
-            msg.innerText = "✅ 正解！";
-            gameState.answered.add(symbol);
-            
-            let points = 1;
-            if(gameState.doubleZones.has(symbol)) {
-                points = 2;
-                msg.innerText = "🔥 2倍ゾーン正解！ (2pt)";
-            }
-            currentP.score += points;
+    // --- ここに判定ロジックを入れます ---
 
-            // 周期表を更新
-            const cells = document.querySelectorAll(`[data-symbol="${symbol}"]`);
-            cells.forEach(c => c.classList.add('filled'));
-        }
+    // 1. そもそも実在するか判定
+    const isValid = ELEMENT_DATA.some(e => e.s === symbol);
+    
+    // 2. すでに回答済みか判定
+    const isAnswered = gameState.answered.has(symbol);
 
+    if (!isValid) {
+        // 実在しない場合：ペナルティ
+        msg.innerText = `❌ 「${symbol}」は実在しません (-1pt)`;
+        currentP.score--;
+        if(gameState.maxLife > 0) currentP.life--;
+    } else if (isAnswered) {
+        // 実在するが回答済み：もう一度
+        msg.innerText = `⚠️ 「${symbol}」は既に出ています！`;
         input.value = "";
-
-        // 終了判定
-        if (currentP.score < 0 || (gameState.maxLife > 0 && currentP.life <= 0)) {
-            endGame(`${currentP.name} の脱落によりゲーム終了！`);
-            return;
+        return; // ターンを交代せずに終了（もう一度入力させる）
+    } else {
+        // 正解：ポイント加算と周期表への反映
+        msg.innerText = `✅ 「${symbol}」正解！`;
+        gameState.answered.add(symbol);
+        
+        let points = 1;
+        // 2倍ルール判定
+        if(gameState.doubleZones.has(symbol)) {
+            points = 2;
+            msg.innerText = `🔥 2倍ゾーン！ 「${symbol}」で2pt獲得！`;
         }
+        currentP.score += points;
 
-        // 次のプレイヤーへ
-        gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
-        updateUI();
+        // 周期表の見た目を更新（塗りつぶし）
+        const cells = document.querySelectorAll(`[data-symbol="${symbol}"]`);
+        cells.forEach(c => c.classList.add('filled'));
     }
+
+    // --- 判定後の処理 ---
+
+    input.value = ""; // 入力欄をクリア
+
+    // 終了判定（ポイントマイナスまたはライフ0）
+    if (currentP.score < 0 || (gameState.maxLife > 0 && currentP.life <= 0)) {
+        endGame(`${currentP.name} のライフまたはポイントが尽きました。`);
+        return;
+    }
+
+    // 次のプレイヤーへ交代
+    gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+    updateUI();
+}
 
     function surrender() {
         const currentP = gameState.players[gameState.currentPlayerIndex];
