@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元素記号コレクションバトル</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --primary-color: #4a90e2;
+            --accent-color: #e74c3c;
+            --double-color: #ffeb3b;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- UI本体 --- */
+        header {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            gap: 2px;
+            background: #ccc;
+            padding: 5px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .element-cell {
+            width: 40px;
+            height: 50px;
+            background: #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: transparent;
+        }
+
+        .element-cell.filled {
+            background: var(--primary-color);
+            color: white;
+            border: 1px solid #fff;
+        }
+
+        .element-cell.double-zone {
+            border: 2px solid red;
+            background: #ffebee;
+        }
+
+        .element-cell.filled.double-zone {
+            background: var(--accent-color);
+        }
+
+        /* --- プレイヤー情報 & 操作 --- */
+        .game-info {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .status-display {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .input-area input {
+            padding: 10px;
+            font-size: 1rem;
+            width: 80px;
+            text-transform: capitalize;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .btn-main { background: var(--primary-color); color: white; }
+        .btn-danger { background: var(--accent-color); color: white; }
+        .btn-settings { background: #666; color: white; }
+
+        /* --- モーダル --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 350px;
+        }
+
+        .setting-item { margin-bottom: 15px; }
+        .setting-item label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>元素記号バトル</h1>
+    <button class="btn-settings" onclick="openModal()">⚙ 設定</button>
+</header>
+
+<div class="periodic-table" id="table"></div>
+
+<div class="game-info">
+    <div id="currentPlayerDisplay" class="status-display">
+        設定からゲームを開始してください
+    </div>
+    <div id="playerStats" style="margin-bottom: 15px;"></div>
+    
+    <div class="input-area">
+        <input type="text" id="symbolInput" placeholder="例: H" maxlength="2">
+        <button class="btn-main" onclick="handleSubmit()">送信</button>
+        <button class="btn-danger" onclick="surrender()">降参</button>
+    </div>
+    <p id="message" style="color: #e74c3c; min-height: 1.2rem;"></p>
+</div>
+
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <h2>ゲーム設定</h2>
+        <div class="setting-item">
+            <label>参加人数</label>
+            <input type="number" id="playerCount" value="2" min="1" max="4" onchange="updatePlayerNameInputs()">
+        </div>
+        <div id="playerNameContainer"></div>
+        <div class="setting-item">
+            <label><input type="checkbox" id="doubleRule"> 2倍ルール(赤枠)を適用</label>
+        </div>
+        <div class="setting-item">
+            <label>ライフ設定</label>
+            <select id="lifeSetting">
+                <option value="0">なし</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <button class="btn-main" style="width: 100%;" onclick="startGame()">ゲームスタート</button>
+    </div>
+</div>
+
+<script>
+    // 元素データ (1-118)
+    const ELEMENTS = ["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"];
+    
+    // 周期表の座標データ (簡略版: 行, 列)
+    const TABLE_POS = [
+        [1,1],[1,18],
+        [2,1],[2,2],[2,13],[2,14],[2,15],[2,16],[2,17],[2,18],
+        [3,1],[3,2],[3,13],[3,14],[3,15],[3,16],[3,17],[3,18],
+        [4,1],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],[4,11],[4,12],[4,13],[4,14],[4,15],[4,16],[4,17],[4,18],
+        [5,1],[5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],[5,9],[5,10],[5,11],[5,12],[5,13],[5,14],[5,15],[5,16],[5,17],[5,18],
+        [6,1],[6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[6,15],[6,16],[6,17],[6,18],
+        [7,1],[7,2],[7,3],[7,4],[7,5],[7,6],[7,7],[7,8],[7,9],[7,10],[7,11],[7,12],[7,13],[7,14],[7,15],[7,16],[7,17],[7,18],
+        // ランタノイド・アクチノイドは今回は列に詰め込み
+    ];
+
+    let gameState = {
+        players: [],
+        currentPlayerIndex: 0,
+        answered: new Set(),
+        doubleZones: new Set(),
+        isGameOver: false,
+        maxLife: 0
+    };
+
+    // 初期化：周期表の枠作成
+    function initTable() {
+        const tableDiv = document.getElementById('table');
+        tableDiv.innerHTML = '';
+        for (let r = 1; r <= 7; r++) {
+            for (let c = 1; c <= 18; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'element-cell';
+                cell.id = `cell-${r}-${c}`;
+                // 元素の配置
+                const index = TABLE_POS.findIndex(p => p[0] === r && p[1] === c);
+                if (index !== -1) {
+                    cell.innerText = ELEMENTS[index];
+                    cell.dataset.symbol = ELEMENTS[index];
+                } else {
+                    cell.style.visibility = 'hidden';
+                }
+                tableDiv.appendChild(cell);
+            }
+        }
+    }
+
+    function openModal() {
+        document.getElementById('settingsModal').style.display = 'flex';
+        updatePlayerNameInputs();
+    }
+
+    function updatePlayerNameInputs() {
+        const count = document.getElementById('playerCount').value;
+        const container = document.getElementById('playerNameContainer');
+        container.innerHTML = '';
+        for(let i=1; i<=count; i++) {
+            container.innerHTML += `<div class="setting-item"><input type="text" id="pName${i}" value="プレイヤー${i}"></div>`;
+        }
+    }
+
+    function startGame() {
+        const count = document.getElementById('playerCount').value;
+        gameState.players = [];
+        gameState.maxLife = parseInt(document.getElementById('lifeSetting').value);
+        
+        for(let i=1; i<=count; i++) {
+            gameState.players.push({
+                name: document.getElementById(`pName${i}`).value,
+                score: 0,
+                life: gameState.maxLife
+            });
+        }
+
+        gameState.doubleZones.clear();
+        if(document.getElementById('doubleRule').checked) {
+            // ランダムに10個を2倍ゾーンに
+            while(gameState.doubleZones.size < 10) {
+                gameState.doubleZones.add(ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)]);
+            }
+        }
+
+        gameState.answered.clear();
+        gameState.currentPlayerIndex = 0;
+        gameState.isGameOver = false;
+        
+        initTable();
+        // 2倍ゾーンの描画
+        gameState.doubleZones.forEach(sym => {
+            const cells = document.querySelectorAll(`[data-symbol="${sym}"]`);
+            cells.forEach(c => c.classList.add('double-zone'));
+        });
+
+        document.getElementById('settingsModal').style.display = 'none';
+        updateUI();
+    }
+
+    function updateUI() {
+        if(gameState.isGameOver) return;
+
+        const currentP = gameState.players[gameState.currentPlayerIndex];
+        document.getElementById('currentPlayerDisplay').innerText = `💡 ${currentP.name} のターン`;
+        
+        let statsHtml = '';
+        gameState.players.forEach(p => {
+            const lifeStr = gameState.maxLife > 0 ? ` | ❤️:${p.life}` : '';
+            statsHtml += `<div>${p.name}: ${p.score}pt${lifeStr}</div>`;
+        });
+        document.getElementById('playerStats').innerHTML = statsHtml;
+    }
+
+    function handleSubmit() {
+        if(gameState.isGameOver) return;
+
+        const input = document.getElementById('symbolInput');
+        const symbol = input.value.trim();
+        const msg = document.getElementById('message');
+        const currentP = gameState.players[gameState.currentPlayerIndex];
+
+        // 判定
+        if (!ELEMENTS.includes(symbol)) {
+            // 不正解
+            msg.innerText = "❌ 実在しない元素記号です (-1pt)";
+            currentP.score--;
+            if(gameState.maxLife > 0) currentP.life--;
+        } else if (gameState.answered.has(symbol)) {
+            // すでに回答済み
+            msg.innerText = "⚠️ すでに回答されています。もう一度！";
+            input.value = "";
+            return; // ターンは継続
+        } else {
+            // 正解
+            msg.innerText = "✅ 正解！";
+            gameState.answered.add(symbol);
+            
+            let points = 1;
+            if(gameState.doubleZones.has(symbol)) {
+                points = 2;
+                msg.innerText = "🔥 2倍ゾーン正解！ (2pt)";
+            }
+            currentP.score += points;
+
+            // 周期表を更新
+            const cells = document.querySelectorAll(`[data-symbol="${symbol}"]`);
+            cells.forEach(c => c.classList.add('filled'));
+        }
+
+        input.value = "";
+
+        // 終了判定
+        if (currentP.score < 0 || (gameState.maxLife > 0 && currentP.life <= 0)) {
+            endGame(`${currentP.name} の脱落によりゲーム終了！`);
+            return;
+        }
+
+        // 次のプレイヤーへ
+        gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+        updateUI();
+    }
+
+    function surrender() {
+        const currentP = gameState.players[gameState.currentPlayerIndex];
+        endGame(`${currentP.name} が降参しました。`);
+    }
+
+    function endGame(reason) {
+        gameState.isGameOver = true;
+        document.getElementById('currentPlayerDisplay').innerText = "🏁 GAME OVER";
+        document.getElementById('message').innerText = reason;
+        
+        // 勝者判定（スコアが一番高い人）
+        const winner = [...gameState.players].sort((a,b) => b.score - a.score)[0];
+        alert(`${reason}\n優勝は ${winner.name} (${winner.score}pt) です！`);
+    }
+
+    // Enterキーで送信
+    document.getElementById('symbolInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSubmit();
+    });
+
+    initTable();
+</script>
+
+</body>
+</html>
